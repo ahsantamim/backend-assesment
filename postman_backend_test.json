@@ -1,0 +1,148 @@
+{
+	"info": {
+		"_postman_id": "f9beb269-77e8-4768-b87d-407dbe1842b3",
+		"name": "Backend hiring",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "6528790"
+	},
+	"item": [
+		{
+			"name": "signup",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"test_1@test.com\",\n  \"password\": \"Test12ar\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/auth/signup"
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"test_1@test.com\",\n  \"password\": \"Test12ar\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/auth/login"
+			},
+			"response": []
+		},
+		{
+			"name": "create lead",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMmFhNmZlMGQ2Nzk5MTgxMTJiYiIsInRpbWVzdGFtcCI6MTczNjQzMDI4OTYxNSwiaWF0IjoxNzM2NDMwMjg5LCJleHAiOjE3MzY0MzIwODl9.TNCYPxUTvT2uRkNHWxSBZyrWfZwCljuU9LTNRmWjDNc"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Lead Two\",\n  \"email\": \"test@test2.com\",\n  \"phone\": \"01781235877\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/leads"
+			},
+			"response": []
+		},
+		{
+			"name": "get all leads",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMmFhNmZlMGQ2Nzk5MTgxMTJiYiIsInRpbWVzdGFtcCI6MTczNjQzMDI4OTYxNSwiaWF0IjoxNzM2NDMwMjg5LCJleHAiOjE3MzY0MzIwODl9.TNCYPxUTvT2uRkNHWxSBZyrWfZwCljuU9LTNRmWjDNc"
+					}
+				],
+				"url": "http://localhost:3000/api/leads"
+			},
+			"response": []
+		},
+		{
+			"name": "get lead by id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMmFhNmZlMGQ2Nzk5MTgxMTJiYiIsInRpbWVzdGFtcCI6MTczNjQzMDI4OTYxNSwiaWF0IjoxNzM2NDMwMjg5LCJleHAiOjE3MzY0MzIwODl9.TNCYPxUTvT2uRkNHWxSBZyrWfZwCljuU9LTNRmWjDNc"
+					}
+				],
+				"url": "http://localhost:3000/api/leads/677fd2e86fe0d679918112be"
+			},
+			"response": []
+		},
+		{
+			"name": "update lead by id",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMmFhNmZlMGQ2Nzk5MTgxMTJiYiIsInRpbWVzdGFtcCI6MTczNjQzMDI4OTYxNSwiaWF0IjoxNzM2NDMwMjg5LCJleHAiOjE3MzY0MzIwODl9.TNCYPxUTvT2uRkNHWxSBZyrWfZwCljuU9LTNRmWjDNc"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\":\"John Doe\",\n  \"email\":\"test@test1.com\",\n  \"phone\":\"01782556579\",\n  \"status\": \"contacted\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/leads/677fd2e86fe0d679918112be"
+			},
+			"response": []
+		},
+		{
+			"name": "delete lead by id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMmFhNmZlMGQ2Nzk5MTgxMTJiYiIsInRpbWVzdGFtcCI6MTczNjQzMDI4OTYxNSwiaWF0IjoxNzM2NDMwMjg5LCJleHAiOjE3MzY0MzIwODl9.TNCYPxUTvT2uRkNHWxSBZyrWfZwCljuU9LTNRmWjDNc"
+					}
+				],
+				"url": "http://localhost:3000/api/leads/677fd2e86fe0d679918112be"
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMmFhNmZlMGQ2Nzk5MTgxMTJiYiIsInRpbWVzdGFtcCI6MTczNjQzMDI4OTYxNSwiaWF0IjoxNzM2NDMwMjg5LCJleHAiOjE3MzY0MzIwODl9.TNCYPxUTvT2uRkNHWxSBZyrWfZwCljuU9LTNRmWjDNc"
+					}
+				],
+				"url": "http://localhost:3000/auth/logout"
+			},
+			"response": []
+		}
+	]
+}

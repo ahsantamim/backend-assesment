@@ -1,0 +1,67 @@
+version: "3.8"
+services:
+  app:
+    image: node:18-alpine
+    container_name: app
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000 
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://root:pass@mongo:27017/
+      - DB_NAME=leadman_dev
+      - ACCESS_TOKEN_SECRET=J83NDY5QuFpeurg6bK3112pW1laahA
+      - REFRESH_TOKEN_SECRET=qW5nTJR5E9VI07BmBzi8zItDO0EOQ5
+    command: >
+      sh -c "
+      npm install &&
+      npx nodemon --legacy-watch --watch src --ext ts --exec npx ts-node --files src/index.ts"
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "admin", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 10s
+      retries: 5 
+
+  tests:
+      image: node:18-alpine
+      container_name: tests
+      working_dir: /usr/src/app
+      volumes:
+        - .:/usr/src/app
+        - /usr/src/app/node_modules
+      environment:
+        - NODE_ENV=test
+        - MONGO_URI=mongodb://root:pass@mongo:27017/
+        - DB_NAME=leadman_test
+        - ACCESS_TOKEN_SECRET=J83NDY5QuFpeurg6bK3112pW1laahA
+        - REFRESH_TOKEN_SECRET=qW5nTJR5E9VI07BmBzi8zItDO0EOQ5
+      command: >
+        sh -c "
+        npm install &&
+        npx nodemon --legacy-watch --watch src --ext ts --exec 'npm test -- --watchAll --detectOpenHandles'"
+
+      depends_on:
+        - mongo
+      profiles:
+        - test
+
+
+volumes:
+  mongo-data: 
