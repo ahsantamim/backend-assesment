@@ -4,6 +4,7 @@ export const SUCCESS_MESSAGES = {
   LEAD_CREATED: "Lead created successfully",
   LEAD_UPDATED: "Lead updated successfully",
   LEAD_DELETED: "Lead deleted successfully",
+  LOGOUT_SUCCESSFUL: "Logout successful", // Added this line
 };
 
 export const ERROR_MESSAGES = {
