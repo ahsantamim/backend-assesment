@@ -12,9 +12,9 @@ interface JwtPayloadWithExp extends jwt.JwtPayload {
   exp?: number; // Optional because it may not always be present
 }
 
-// Create a Redis client
+// Redis client setup
 export const redisClient = createClient({
-  url: process.env.REDIS_URL || "redis://localhost:6379", // Redis URL from environment or default to localhost
+  url: process.env.REDIS_URL || "redis://localhost:6379",
 });
 
 redisClient.on("error", (err) => {
@@ -23,7 +23,6 @@ redisClient.on("error", (err) => {
   }
 });
 
-// Attempt to connect to Redis
 const connectRedis = async () => {
   try {
     await redisClient.connect();
@@ -33,22 +32,24 @@ const connectRedis = async () => {
   }
 };
 
-connectRedis(); // Try to connect to Redis when the service starts
+connectRedis();
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
   try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      res.status(400).json({ error: ERROR_MESSAGES.EMAIL_ALREADY_EXISTS });
+      return;
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = new User({
-      email,
-      password: hashedPassword,
-    });
-
+    const user = new User({ email, password: hashedPassword });
     await user.save();
+
     res.status(201).json({ message: SUCCESS_MESSAGES.USER_CREATED });
-  } catch (err: Error | any) {
+  } catch (err: any) {
     if (err.code === 11000) {
       res.status(400).json({ error: ERROR_MESSAGES.SIGNUP_FAILED });
     } else {
@@ -62,7 +63,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
   try {
     const user = await User.findOne({ email });
-
     if (!user || !(await bcrypt.compare(password, user.password))) {
       res.status(401).json({ error: ERROR_MESSAGES.INVALID_CREDENTIALS });
       return;
@@ -71,50 +71,69 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const accessToken = generateAccessToken(user._id.toString());
     const refreshToken = generateRefreshToken(user._id.toString());
 
-    // Store the refresh token in the browser cookie
+    await redisClient.set(refreshToken, user._id.toString(), {
+      EX: 7 * 24 * 60 * 60, // Set expiration for 7 days
+    });
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Only secure cookies in production
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
     });
 
-    res
-      .status(200)
-      .json({ message: SUCCESS_MESSAGES.LOGIN_SUCCESSFUL, accessToken });
-  } catch (error) {
+    res.status(200).json({
+      message: SUCCESS_MESSAGES.LOGIN_SUCCESSFUL,
+      accessToken,
+    });
+  } catch (err) {
+    console.error("Error during login:", err);
     res.status(500).json({ error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
   }
 };
 
 export const logout = async (req: Request, res: Response): Promise<void> => {
-  const token = req.headers.authorization?.split(" ")[1];
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+      res.status(400).json({ error: ERROR_MESSAGES.MISSING_REFRESH_TOKEN });
+      return;
+    }
 
-  if (!token) {
-    res.status(401).json({ error: ERROR_MESSAGES.UNAUTHORIZED });
-    return;
+    await redisClient.del(refreshToken);
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    // Return a success message with a 200 OK status instead of 204
+    res.status(200).json({
+      message: SUCCESS_MESSAGES.LOGOUT_SUCCESSFUL,
+    });
+  } catch (err) {
+    res.status(500).json({ error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
   }
+};
+
+export const validateAccessToken = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { token } = req.body;
 
   try {
-    // Add the token to Redis with an expiration time
-    const decoded = jwt.verify(
+    const payload = jwt.verify(
       token,
       process.env.ACCESS_TOKEN_SECRET!
     ) as JwtPayloadWithExp;
 
-    if (!decoded.exp) {
-      res.status(400).json({ error: "Token expiration not found" });
-      return;
-    }
-
-    const expiration = decoded.exp - Math.floor(Date.now() / 1000);
-
-    // Set the JWT to be blacklisted in Redis with the expiration time of the original token
-    await redisClient.set(`blacklist:${token}`, "logged_out", {
-      EX: expiration, // Expire the key when the JWT expires
+    res.status(200).json({
+      message: SUCCESS_MESSAGES.TOKEN_VALID,
+      userId: payload.id,
     });
-
-    res.status(200).json({ message: SUCCESS_MESSAGES.LOGOUT_SUCCESSFUL });
-  } catch (error) {
-    res.status(500).json({ error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
+  } catch (err) {
+    console.error("Invalid token:", err); // Debug log for token validation error
+    res.status(401).json({ error: ERROR_MESSAGES.INVALID_TOKEN });
   }
 };
