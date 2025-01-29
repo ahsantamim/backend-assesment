@@ -4,6 +4,8 @@ export const SUCCESS_MESSAGES = {
   LEAD_CREATED: "Lead created successfully",
   LEAD_UPDATED: "Lead updated successfully",
   LEAD_DELETED: "Lead deleted successfully",
+  LOGOUT_SUCCESSFUL: "Logout successful",
+  TOKEN_VALID: "Token is valid", // Added this line
 };
 
 export const ERROR_MESSAGES = {
@@ -21,5 +23,8 @@ export const ERROR_MESSAGES = {
   PASSWORD_MUST_CONTAIN_AT_LEAST_ONE_NUMBER:
     "Password must contain at least one number",
   INVALID_CREDENTIALS: "Invalid credentials",
+  EMAIL_ALREADY_EXISTS: "Email already exists", // Added this line
+  MISSING_REFRESH_TOKEN: "Missing refresh token", // Added this line
+  INVALID_TOKEN: "Invalid token", // Added this line
   LEAD_NOT_FOUND: "Lead not found",
 };

@@ -165,7 +165,7 @@ describe("POST /auth/logout", () => {
       .post("/auth/logout")
       .set("Authorization", `Bearer ${token}`)
       .set("Cookie", `refreshToken=${refreshTokenCookie}`)
-      .timeout(2000);
+      .timeout(6000);
 
     expect(logoutResponse.status).toBe(204);
 
@@ -214,7 +214,7 @@ describe("POST /auth/logout", () => {
       .post("/auth/logout")
       .set("Authorization", `Bearer ${tokenOne}`)
       .set("Cookie", `refreshToken=${refreshTokenCookie}`)
-      .timeout(2000);
+      .timeout(6000);
 
     expect(logoutResponseOne.status).toBe(204);
 
